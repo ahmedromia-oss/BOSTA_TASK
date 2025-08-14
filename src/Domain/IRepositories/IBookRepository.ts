@@ -3,5 +3,5 @@ import { BookBorrower } from "../Models/BorrowerBook.model.js";
 import type { IBaseRepository } from "./IBaseRepository.js";
 
 export interface IBookRepository extends IBaseRepository<Book>{
-
+  searchBooks(searchTerm:string):Promise<Book[]>
 }

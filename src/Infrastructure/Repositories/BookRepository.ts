@@ -10,4 +10,20 @@ export class BookRepository extends BaseRepository<Book> implements IBookReposit
   ) {
     super(repository);
   }
+  async searchBooks(searchTerm: string): Promise<Book[]> {
+    return await this.repository
+    .createQueryBuilder('book')
+    .leftJoinAndSelect('book.author', 'author')
+    .where(
+      'LOWER(book.title) LIKE LOWER(:searchTerm) OR ' +
+      'LOWER(author.name) LIKE LOWER(:searchTerm) OR ' +
+      'book.ISBN = :exactTerm',
+      { 
+        searchTerm: `%${searchTerm}%`,
+        exactTerm: searchTerm 
+      }
+    )
+    .getMany();
+  }
+
 }

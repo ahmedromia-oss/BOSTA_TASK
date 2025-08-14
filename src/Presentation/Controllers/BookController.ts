@@ -15,6 +15,12 @@ import { UserType } from "../../Domain/constants.js";
 
 export class BookController implements IBookController {
   constructor(private bookService: IBookService) {}
+  @serialize(GetBookDto)
+  async searchBooks(req: Request, res: Response): Promise<Book[]> {
+    
+    const searchTerm = req.query.search as string;
+    return await this.bookService.searchBooks(searchTerm)
+  }
   // @Auth(UserType.ADMIN)
   @serialize(GetBookDto)
   async create({ body }: Request, res: Response): Promise<Book> {

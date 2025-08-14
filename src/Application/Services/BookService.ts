@@ -7,5 +7,8 @@ export class BookService extends BaseService<Book> implements IBookService {
     constructor(private readonly bookRepository:IBookRepository){
         super(bookRepository)
     }
+    async searchBooks(searchTerm: string): Promise<Book[]> {
+        return await this.bookRepository.searchBooks(searchTerm)
+    }
 
 }
