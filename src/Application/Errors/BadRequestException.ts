@@ -1,3 +1,7 @@
+/**
+ * Custom exception for 400 Bad Request errors
+ * Handles both array of error strings and structured error objects
+ */
 export class BadRequestException extends Error {
   public statusCode: number;
   public errors: string[] | Record<string, any>;
@@ -8,11 +12,11 @@ export class BadRequestException extends Error {
     this.name = "BadRequestException";
     this.statusCode = 400;
     this.errors = errors;
-    // restore prototype chain for instanceof checks
+    // Fix for TypeScript inheritance - ensures instanceof works correctly
     Object.setPrototypeOf(this, BadRequestException.prototype);
   }
 
-  // ensures JSON serialization includes our fields
+  // Custom JSON serialization to include all relevant error data
   toJSON() {
     return {
       name: this.name,

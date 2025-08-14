@@ -4,6 +4,7 @@ import { AuthGuard } from "../Gaurds/Auth.gaurd.js";
 import { ForbiddenException } from "../../Application/Errors/ForbiddenException.js";
 import { Code, ValidationErrors } from "../../Domain/constants.js";
 
+// Initialize JWT service and auth guard instances
 const jwtService = new JwtService();
 const authGuard = new AuthGuard(jwtService);
 
@@ -21,7 +22,7 @@ export function Auth(requiredRoles?: string | string[]) {
 
     descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
       try {
-        // 1️⃣ Authenticate first
+        // First step: verify the user's token is valid
         await new Promise<void>((resolve, reject) => {
           authGuard.authenticate(req, res, (err?: any) => {
             if (err) return reject(err);
@@ -29,7 +30,7 @@ export function Auth(requiredRoles?: string | string[]) {
           });
         });
 
-        // 2️⃣ Check roles if provided
+        // Second step: if roles are specified, check user has permission
         if (requiredRoles) {
           const rolesArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
           if (!req.user || !rolesArray.includes(req.user.userType)) {
@@ -37,12 +38,13 @@ export function Auth(requiredRoles?: string | string[]) {
           }
         }
 
-        // 3️⃣ Call the original controller method
+        // All checks passed, execute the original controller method
         const result = originalMethod.call(this, req, res, next);
         if (result instanceof Promise) {
           await result;
         }
       } catch (error) {
+        // Pass any errors to Express error handler
         next(error);
       }
     };

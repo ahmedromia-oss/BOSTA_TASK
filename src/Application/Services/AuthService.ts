@@ -13,55 +13,80 @@ import { JwtService } from "@nestjs/jwt";
 import type { IUserService } from "../../Domain/IServices/IUserService.js";
 import { UnAuthorizedException } from "../Errors/UnAuthorizedException.js";
 import { BadRequestException } from "../Errors/BadRequestException.js";
+
+/**
+ * Service handling user authentication operations
+ * Manages login, registration, and password hashing
+ */
 export class AuthService implements IAuthService {
   constructor(
     private readonly userService: IUserService,
     private readonly jwtService: JwtService
   ) {}
+
   async login(login: LoginDto): Promise<AuthResponseDto> {
+    // Find user by email address
     const user = await this.userService.findOne({
       where: { email: login.email },
     });
 
     if (user) {
+      // Verify password using stored salt and hash
       const scrypt = promisify(_scrypt);
       const [salt, Storedhash] = user.password.split(".");
       const hash = (await scrypt(login.password, salt!, 32)) as Buffer;
+      
       if (Storedhash != hash.toString("hex")) {
         throw new BadRequestException({message:"Wrong credintials"});
       }
+      
+      // Create JWT payload with user info
       const payload: UserToken = {
         sub: user.id,
-        userType:user.userType
+        userType: user.userType
       };
+      
+      // Generate access token
       const token = await this.jwtService.signAsync(payload, {
         secret: "mySecretKey",
         expiresIn: "1h",
       });
+      
       return { token: token };
     }
+    
     throw new UnAuthorizedException("Wrong credintials");
   }
+
   async register(signInDto: RegisterDto): Promise<User> {
+    // Check if email is already taken
     if (
       (await this.userService.checkIFExists({
         where: { email: signInDto.email },
       }))
     ) {
-   
       throw new BadRequestException({message:Code.EMAIL_USED});
     }
 
+    // Hash the password before storing
     const hashedPass = await this.hashSaltPassword(signInDto.password);
     signInDto.password = hashedPass;
+    
+    // Convert DTO to User entity and save
     const user = plainToInstance(User, signInDto);
-
     return await this.userService.create(user);
   }
 
   verifyToken(token: string): Promise<boolean> {
+    // TODO: Implement token verification logic
     throw new Error("Method not implemented.");
   }
+
+  /**
+   * Hash password with random salt using scrypt
+   * @param password Plain text password to hash
+   * @returns Salted hash in format "salt.hash"
+   */
   private async hashSaltPassword(password: string): Promise<string> {
     const scrypt = promisify(_scrypt);
     const salt = randomBytes(8).toString("hex");

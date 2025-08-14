@@ -99,7 +99,7 @@ container.registerInterface<IBorrowController>(
     );
     return new BorrowController(borrowService);
   },
-  true
+  
 );
 
 container.register<Repository<BookBorrower>>(
@@ -148,7 +148,6 @@ container.registerInterface<IAuthorController>(
     );
     return new AuthorController(authorService);
   },
-  true
 );
 
 container.registerInterface<IBookController>(
@@ -162,7 +161,6 @@ container.registerInterface<IBookController>(
     );
     return new BookController(bookService , authorService);
   },
-  true
 );
 
 container.register(SERVICE_TOKENS.JwtService, {
@@ -236,7 +234,7 @@ container.registerInterface<IAuthController>(
     );
     return new AuthController(authService);
   },
-  true
+  
 );
 
 // Register UserController
@@ -248,5 +246,5 @@ container.registerInterface<IUserController>(
     );
     return new UserController(userService);
   },
-  true
+  
 );
