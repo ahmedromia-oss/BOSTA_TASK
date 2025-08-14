@@ -21,7 +21,7 @@ import { BaseService } from "../../Application/Services/BaseService.js";
 import type { IBaseService } from "../../Domain/IServices/IBaseService.js";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DatabaseService } from "../DataBase/DataBaseService.js";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { IBookController } from "../../Domain/IControllers/IBookController.js";
 import { BookController } from "../../Presentation/Controllers/BookController.js";
 import { IAuthorRepository } from "../../Domain/IRepositories/IAuthorRepository.js";
@@ -38,6 +38,8 @@ import { BorrowController } from "../../Presentation/Controllers/BorrowControlle
 import { IBorrowerBookRepository } from "../../Domain/IRepositories/IBorrowerBookRepository.js";
 import { BookBorrowerRepository } from "../Repositories/BorrowBookRepository.js";
 import { AuthorRepository } from "../Repositories/AuthorRepository.js";
+import { IUnitOfWork } from "../../Domain/IServices/IUnitOfWorkService.js";
+import { UnitOfWork } from "../../Application/Services/UnitOfWorkService.js";
 
 // Service tokens
 export const SERVICE_TOKENS = {
@@ -55,7 +57,7 @@ export const SERVICE_TOKENS = {
   IBaseService: Symbol("IBaseService"),
   IBookRespository: Symbol("IBookRespository"),
   IUserRepository: Symbol("IUserRepository"),
-  IAuthorRepository:Symbol("IAuthorRepository"),
+  IAuthorRepository: Symbol("IAuthorRepository"),
   IBookService: Symbol("IBookService"),
   RepositoryBook: Symbol("RepositoryBook"),
   ReposioryUser: Symbol("ReposioryUser"),
@@ -66,6 +68,7 @@ export const SERVICE_TOKENS = {
   IBookBorrwerRepository: Symbol("IBookBorrwerRepository"),
   JwtService: Symbol("JwtService"),
   DataBaseService: Symbol("DataBaseService"),
+  IUnitOfWork: Symbol("IUnitOfWork"),
 } as const;
 
 // Container instance
@@ -122,9 +125,14 @@ container.registerInterface<IBookBorrowerService>(
       container.resolve<IBorrowerBookRepository>(
         SERVICE_TOKENS.IBookBorrwerRepository
       ),
-      container.resolve<IBookService>(SERVICE_TOKENS.IBookService)
+      container.resolve<IBookService>(SERVICE_TOKENS.IBookService),
+      container.resolve<IUnitOfWork>(SERVICE_TOKENS.IUnitOfWork)
     )
 );
+container.registerInterface<IUnitOfWork>(SERVICE_TOKENS.IUnitOfWork, () => {
+  
+  return new UnitOfWork();
+});
 container.registerInterface<IAuthorService>(
   SERVICE_TOKENS.IAuthorservice,
   () =>
