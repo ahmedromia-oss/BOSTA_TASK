@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 import { UserType } from "../constants.js";
 
 @Entity()
+@Index('idx_user_email_unique', ['email'], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

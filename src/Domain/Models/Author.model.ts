@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, Index } from "typeorm";
 import { Book } from "./Book.model.js";
 
 @Entity()
+@Index('idx_author_name_created', ['name', 'createdAt'])
 export class Author {
   @PrimaryGeneratedColumn()
   id: number;

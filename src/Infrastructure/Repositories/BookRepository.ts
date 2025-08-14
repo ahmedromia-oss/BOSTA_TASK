@@ -21,7 +21,9 @@ export class BookRepository extends BaseRepository<Book> implements IBookReposit
         searchTerm: `%${searchTerm}%`,
         exactTerm: searchTerm 
       }
+      
     )
+    .orderBy('createdAt' , 'DESC')
     .getMany();
   }
 

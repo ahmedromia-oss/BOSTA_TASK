@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +13,9 @@ import { Book } from "./Book.model.js";
 import { BorrowStatus } from "../constants.js";
 
 @Entity()
+@Index('idx_borrow_user_status_created', ['userId', 'status', 'createdAt'])
+@Index('idx_borrow_book_created_latest', ['bookId', 'createdAt'])
+@Index('idx_borrow_created_desc', ['createdAt'])
 export class BookBorrower {
   @PrimaryGeneratedColumn()
   id: number;

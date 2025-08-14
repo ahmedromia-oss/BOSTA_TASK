@@ -7,12 +7,17 @@ import {
   ManyToOne,
   JoinColumn,
   Check,
+  Index,
 } from "typeorm";
 import { Author } from "./Author.model.js";
 
 @Entity()
 @Check(`"availableQuantity" >= 0`)
-
+@Entity('book')
+@Index('idx_book_title_created', ['title', 'createdAt'])
+@Index('idx_book_isbn_unique', ['ISBN'], { unique: true })
+@Index('idx_book_author_fk', ['authorId'])
+@Index('idx_book_created_desc', ['createdAt'])
 export class Book {
   @PrimaryGeneratedColumn()
   id: number;
