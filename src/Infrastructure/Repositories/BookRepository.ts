@@ -9,7 +9,7 @@ export class BookRepository extends BaseRepository<Book> implements IBookReposit
   ) {
     super(repository);
   }
-  async searchBooks(searchTerm: string): Promise<Book[]> {
+  async searchBooks(searchTerm: string , skip:number = 0 , take:number = 5): Promise<Book[]> {
     return await this.repository
     .createQueryBuilder('book')
     .leftJoinAndSelect('book.author', 'author')
@@ -24,6 +24,8 @@ export class BookRepository extends BaseRepository<Book> implements IBookReposit
       
     )
     .orderBy('createdAt' , 'DESC')
+    .skip(skip)
+    .take(take)
     .getMany();
   }
 

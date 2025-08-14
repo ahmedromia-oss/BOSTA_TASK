@@ -11,6 +11,7 @@ import { GetBookDto } from "../../Presentation/DTOs/Book/getBook.dto.js";
 import { NotFoundException } from "../Errors/NotFoundException.js";
 import { BaseService } from "./BaseService.js";
 import { BadRequestException } from "../Errors/BadRequestException.js";
+import { skip } from "node:test";
 
 export class BookBorrowerService
   extends BaseService<BookBorrower>
@@ -157,10 +158,10 @@ async returnBook(BookId: number, userId: number): Promise<string> {
     return "Not Borrowed";
   }
 }
-  async getBorrowedBooks(userId: number): Promise<BookBorrower[]> {
-    return await this.bookBorrowerRepository.getBorrowedBooksByUser(userId);
+  async getBorrowedBooks(userId: number,skip?:number , take?:number): Promise<BookBorrower[]> {
+    return await this.bookBorrowerRepository.getBorrowedBooksByUser(userId , skip , take);
   }
-  async getOverdueBooks(userId: number): Promise<BookBorrower[]> {
-    return await this.bookBorrowerRepository.getOverDuedBookByUser(userId);
+  async getOverdueBooks(userId: number , skip?:number , take?:number): Promise<BookBorrower[]> {
+    return await this.bookBorrowerRepository.getOverDuedBookByUser(userId, skip??0 , take??5);
   }
 }

@@ -4,8 +4,8 @@ import { BookBorrower } from "../Models/BorrowerBook.model.js";
 import type { IBaseRepository } from "./IBaseRepository.js";
 
 export interface IBorrowerBookRepository extends IBaseRepository<BookBorrower>{
-    getBorrowedBooksByUser(userId:number):Promise<BookBorrower[]>
-    getOverDuedBookByUser(userId:number):Promise<BookBorrower[]>
-    getBorrowedBooks():Promise<BookBorrower[]>
-    getOverDuedBooks():Promise<BookBorrower[]>
+    getBorrowedBooksByUser(userId:number , skip?:number , take?:number):Promise<BookBorrower[]>
+    getOverDuedBookByUser(userId:number , skip?:number , take?:number):Promise<BookBorrower[]>
+    getBorrowedBooks(skip?:number , take?:number):Promise<BookBorrower[]>
+    getOverDuedBooks(skip?:number , take?:number):Promise<BookBorrower[]>
 }

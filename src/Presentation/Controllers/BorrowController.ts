@@ -13,16 +13,19 @@ export class BorrowController implements IBorrowController{
     constructor(private readonly borrowService:IBookBorrowerService){}
     @serialize(getBorrowedBooksDto)
     async AllgetOverdueBooks(req: Request, res: Response): Promise<BookBorrower[]> {
-        return await this.borrowService.AllgetOverdueBooks()
+        const {skip , take} = req.query
+        return await this.borrowService.AllgetOverdueBooks(Number(skip),Number(take))
     }
     @serialize(getBorrowedBooksDto)
     async AllgetBorrowedBooks(req: Request, res: Response): Promise<BookBorrower[]> {
-        return await this.borrowService.AllgetBorrowedBooks()
+        const {skip , take} = req.query
+        return await this.borrowService.AllgetBorrowedBooks(Number(skip) , Number(take))
     }
     @Auth()
     @serialize()
     async borrowBook({user , ...req}: Request, res: Response): Promise<string> {
        const {bookId} = req.params
+       
        return await this.borrowService.borrowBook(Number(bookId) , Number(user?.sub))
     }
     @Auth()
@@ -35,13 +38,15 @@ export class BorrowController implements IBorrowController{
     }
     @Auth()
     @serialize(getBorrowedBooksDto)
-    async getBorrowedBooks({user}: Request, res: Response): Promise<BookBorrower[]> {
-        return await this.borrowService.getBorrowedBooks(user?.sub??0)
+    async getBorrowedBooks({user , ...req}: Request, res: Response): Promise<BookBorrower[]> {
+        const {skip , take} = req.query
+        return await this.borrowService.getBorrowedBooks(user?.sub??0 , Number(skip) , Number(take))
     }
     @Auth()
     @serialize(getBorrowedBooksDto)
-    async getOverdueBooks({user}: Request, res: Response): Promise<BookBorrower[]> {
-        return await this.borrowService.getOverdueBooks(user?.sub??0)
+    async getOverdueBooks({user , ...req}: Request, res: Response): Promise<BookBorrower[]> {
+        const {skip , take} = req.query
+        return await this.borrowService.getOverdueBooks(user?.sub??0 , Number(skip) , Number(take))
 
     }
    

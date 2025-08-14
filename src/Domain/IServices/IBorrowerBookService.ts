@@ -21,17 +21,17 @@ export interface IBookBorrowerService extends IBaseService<BookBorrower> {
       /**
        * Get all books currently borrowed by a user
        */
-      getBorrowedBooks(userId:number): Promise<BookBorrower[]>;
+      getBorrowedBooks(userId:number ,skip?:number , take?:number): Promise<BookBorrower[]>;
     
       /**
        * Get all overdue books for a user or globally
        */
-      getOverdueBooks(userId:number): Promise<BookBorrower[]>;
+      getOverdueBooks(userId:number , skip?:number , take?:number): Promise<BookBorrower[]>;
 
-      AllgetBorrowedBooks(): Promise<BookBorrower[]>;
+      AllgetBorrowedBooks(skip?:number , take?:number): Promise<BookBorrower[]>;
     
       /**
        * Get all overdue books for a user or globally
        */
-      AllgetOverdueBooks(): Promise<BookBorrower[]>;
+      AllgetOverdueBooks(skip?:number , take?:number): Promise<BookBorrower[]>;
 }

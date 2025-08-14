@@ -16,26 +16,32 @@ import { AuthorService } from "../../Application/Services/AuthorService.js";
 import { IAuthorService } from "../../Domain/IServices/IAuthorService.js";
 
 export class BookController implements IBookController {
-  constructor(private bookService: IBookService , private readonly authorService:IAuthorService) {}
+  constructor(
+    private bookService: IBookService,
+    private readonly authorService: IAuthorService
+  ) {}
   @serialize(GetBookDto)
   async searchBooks(req: Request, res: Response): Promise<Book[]> {
-    
     const searchTerm = req.query.search as string;
-    return await this.bookService.searchBooks(searchTerm)
+    return await this.bookService.searchBooks(searchTerm);
   }
   // @Auth(UserType.ADMIN)
   @serialize(GetBookDto)
   async create({ body }: Request, res: Response): Promise<Book> {
-    const book = plainToInstance(CreateBookDto, body , {excludeExtraneousValues:true});
+    const book = plainToInstance(CreateBookDto, body, {
+      excludeExtraneousValues: true,
+    });
 
-    if(book.authorId){
-      await this.authorService.findOne({where:{id:book.authorId}})
+    if (book.authorId) {
+      await this.authorService.findOne({ where: { id: book.authorId } });
     }
-    if(await this.bookService.checkIFExists({where:{ISBN:book.ISBN}})){
-      throw new BadRequestException({message:"ISBN already has been used"})
+    if (await this.bookService.checkIFExists({ where: { ISBN: book.ISBN } })) {
+      throw new BadRequestException({ message: "ISBN already has been used" });
     }
-    if(await this.bookService.checkIFExists({where:{title:book.title}})){
-      throw new BadRequestException({message:"title already has been used"})
+    if (
+      await this.bookService.checkIFExists({ where: { title: book.title } })
+    ) {
+      throw new BadRequestException({ message: "title already has been used" });
     }
 
     const errors = await validate(book);
@@ -54,7 +60,8 @@ export class BookController implements IBookController {
 
   @serialize(GetBookDto)
   async getAll(req: Request, res: Response): Promise<Book[]> {
-    return await this.bookService.findAll();
+    const {take , skip} = req.query
+    return await this.bookService.findAll({take:Number(take??5),skip:Number(skip??0)});
   }
 
   @serialize()
@@ -62,8 +69,9 @@ export class BookController implements IBookController {
     const { id } = req.params;
     const { body } = req;
 
-    const updateData = plainToInstance(UpdateBookDto, body , {excludeExtraneousValues:true});
-    
+    const updateData = plainToInstance(UpdateBookDto, body, {
+      excludeExtraneousValues: true,
+    });
 
     const errors = await validate(updateData);
     if (errors.length > 0) {
@@ -74,7 +82,8 @@ export class BookController implements IBookController {
   }
   @serialize()
   async delete(req: Request, res: Response): Promise<string> {
-    const { id } = req.params;
+    const { id } = req.query;
     return await this.bookService.delete({ id: Number(id) });
   }
+  
 }
