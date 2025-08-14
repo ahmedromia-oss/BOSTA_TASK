@@ -26,9 +26,16 @@ export class BookController implements IBookController {
   // @Auth(UserType.ADMIN)
   @serialize(GetBookDto)
   async create({ body }: Request, res: Response): Promise<Book> {
-    const book = plainToInstance(CreateBookDto, body);
+    const book = plainToInstance(CreateBookDto, body , {excludeExtraneousValues:true});
+
     if(book.authorId){
       await this.authorService.findOne({where:{id:book.authorId}})
+    }
+    if(await this.bookService.checkIFExists({where:{ISBN:book.ISBN}})){
+      throw new BadRequestException({message:"ISBN already has been used"})
+    }
+    if(await this.bookService.checkIFExists({where:{title:book.title}})){
+      throw new BadRequestException({message:"title already has been used"})
     }
 
     const errors = await validate(book);
