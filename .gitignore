@@ -118,7 +118,6 @@ uploads/
 public/uploads/
 
 # Generated documentation
-docs/
 
 # Jest coverage
 coverage/
