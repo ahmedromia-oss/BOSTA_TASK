@@ -11,6 +11,10 @@ export function createUserRoutes(): Router {
   );
   router.get("/", userController.getUsers.bind(userController));
   router.post("/create", userController.createUser.bind(userController));
+  router.put("/update", userController.updateUser.bind(userController));
+  router.get("/user/:id", userController.getUserById.bind(userController));
+
+  router.delete("/delete/:id", userController.deleteUser.bind(userController));
 
   return router;
 }
