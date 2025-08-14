@@ -19,7 +19,7 @@ export class UserController implements IUserController {
     const { id } = req.params;
     return await this.userService.findById(Number(id));
   }
-  @Auth(UserType.USER)
+  @Auth(UserType.ADMIN)
   @serialize()
   async deleteUser(req: Request, res: Response): Promise<string> {
     const { id } = req.params;

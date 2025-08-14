@@ -16,10 +16,15 @@ export class AuthorController implements IAuthorController {
     constructor(private readonly authorService:IAuthorService){}
 
     // @Auth(UserType.ADMIN)
+    @Auth(UserType.ADMIN)
 
     @serialize(getAuthorDto)
     async create({body}: Request , res: Response): Promise<Author> {
         const authorData:CreateAuthorDto = plainToInstance(CreateAuthorDto , body)
+        if(await this.authorService.checkIFExists({where:{name:authorData.name}})){
+            throw new BadRequestException({message:"Author with this name already exists"})
+        }
+
         const errors = await validate(authorData)
         if(errors.length > 0){
             throw new BadRequestException(errors)
@@ -36,16 +41,20 @@ export class AuthorController implements IAuthorController {
     async getAll(req: Request, res: Response): Promise<Author[]> {
         return await this.authorService.findAll()
     }
+    @Auth(UserType.ADMIN)
+
     @serialize()
     async update({body , ...req}: Request, res: Response): Promise<string> {
         const {id} = req.params
-        const authorData:CreateAuthorDto = plainToInstance(body , UpdateAuthorDto)
+        const authorData:UpdateAuthorDto = plainToInstance(UpdateAuthorDto ,body )
         const errors = await validate(authorData)
         if(errors.length > 0){
             throw new BadRequestException(errors)
         }
         return await this.authorService.update({id:Number(id)} , authorData)
     }
+    @Auth(UserType.ADMIN)
+
     @serialize()
     async delete(req: Request, res: Response): Promise<string> {
         const {id} = req.params

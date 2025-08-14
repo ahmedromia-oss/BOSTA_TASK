@@ -12,9 +12,11 @@ import { Book } from "../../Domain/Models/Book.model.js";
 import { UpdateBookDto } from "../DTOs/Book/updateBook.dto.js";
 import { Auth } from "../../Application/Decorators/authGaurd.decorator.js";
 import { UserType } from "../../Domain/constants.js";
+import { AuthorService } from "../../Application/Services/AuthorService.js";
+import { IAuthorService } from "../../Domain/IServices/IAuthorService.js";
 
 export class BookController implements IBookController {
-  constructor(private bookService: IBookService) {}
+  constructor(private bookService: IBookService , private readonly authorService:IAuthorService) {}
   @serialize(GetBookDto)
   async searchBooks(req: Request, res: Response): Promise<Book[]> {
     
@@ -25,6 +27,9 @@ export class BookController implements IBookController {
   @serialize(GetBookDto)
   async create({ body }: Request, res: Response): Promise<Book> {
     const book = plainToInstance(CreateBookDto, body);
+    if(book.authorId){
+      await this.authorService.findOne({where:{id:book.authorId}})
+    }
 
     const errors = await validate(book);
     if (errors.length > 0) {
@@ -50,7 +55,8 @@ export class BookController implements IBookController {
     const { id } = req.params;
     const { body } = req;
 
-    const updateData = plainToInstance(UpdateBookDto, body);
+    const updateData = plainToInstance(UpdateBookDto, body , {excludeExtraneousValues:true});
+    
 
     const errors = await validate(updateData);
     if (errors.length > 0) {

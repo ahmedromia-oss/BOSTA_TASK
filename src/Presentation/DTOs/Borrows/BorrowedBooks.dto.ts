@@ -1,19 +1,10 @@
 import { Expose, Type } from "class-transformer";
 import { BorrowStatus } from "../../../Domain/constants.js";
+import { GetUserDto } from "../User/getUser.dto.js";
+import { GetBookDto } from "../Book/getBook.dto.js";
 
 export class getBorrowedBooksDto {
-  @Expose()
-  id: string;
-
-  @Expose()
-  title: string;
-
-  @Expose()
-  ISBN: string;
-
-  @Expose()
-  availableQuantity: number;
-
+ 
   @Expose()
   status: BorrowStatus;
   @Expose()
@@ -21,7 +12,9 @@ export class getBorrowedBooksDto {
   @Expose()
   dueDate: Date;
   @Expose()
-  username: string;
+  @Type(()=>GetUserDto)
+  user:GetUserDto
   @Expose()
-  email: string;
+  @Type(()=>GetBookDto)
+  book:GetBookDto
 }

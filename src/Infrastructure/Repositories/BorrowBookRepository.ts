@@ -15,88 +15,86 @@ export class BookBorrowerRepository
     super(repository);
   }
   async getBorrowedBooksByUser(userId: number): Promise<BookBorrower[]> {
-    const result = await this.repository.manager.query(
-      `
-   SELECT *
-  FROM (
-    SELECT bb.*, b.*,
-           ROW_NUMBER() OVER (
-             PARTITION BY bb."bookId" 
-             ORDER BY bb."createdAt" DESC
-           ) as rn
-    FROM book_borrower bb
-    JOIN book b ON bb."bookId" = b.id
-      AND bb."userId" = $1
-  ) ranked
-  WHERE (status = '${BorrowStatus.BORROWED}') and rn = 1
+   const sub = this.repository.createQueryBuilder('sub_bb')
+  .select('sub_bb.bookId', 'bookId')
+  .addSelect('MAX(sub_bb.createdAt)', 'max_created')
+  .groupBy('sub_bb.bookId');
 
-  
-`,
-      [userId]
-    );
-
-    return result;
+const result = await this.repository.createQueryBuilder('bb')
+  .innerJoin(`(${sub.getQuery()})`, 'm', 'bb."bookId" = m."bookId" AND bb."createdAt" = m.max_created')
+  .innerJoinAndSelect('bb.book', 'b')
+  .where('bb.status = :status')
+  .andWhere('bb.userId = :userId') // filter by userId
+  .setParameters({
+    ...(sub.getParameters ? sub.getParameters() : {}),
+    status: BorrowStatus.BORROWED,
+    userId,
+  })
+  .getMany();
+  return result
   }
-  async getOverDuedBookByUser(userId: number): Promise<BookBorrower[]> {
-    const result = await this.repository.manager.query(
-      `
-   SELECT *
-  FROM (
-    SELECT bb.*, b.*,
-           ROW_NUMBER() OVER (
-             PARTITION BY bb."bookId" 
-             ORDER BY bb."createdAt" DESC
-           ) as rn
-    FROM book_borrower bb
-    JOIN book b ON bb."bookId" = b.id
-      AND bb."userId" = $1
-  ) ranked
-  WHERE status = '${BorrowStatus.OVERDUE}' and rn = 1
+async getOverDuedBookByUser(userId: number): Promise<BookBorrower[]> {
+  const sub = this.repository.createQueryBuilder('sub_bb')
+    .select('sub_bb.bookId', 'bookId')
+    .addSelect('MAX(sub_bb.createdAt)', 'max_created')
+    .groupBy('sub_bb.bookId');
 
-  
-`,
-      [userId]
-    );
+  const result = await this.repository.createQueryBuilder('bb')
+    .innerJoin(`(${sub.getQuery()})`, 'm', 'bb."bookId" = m."bookId" AND bb."createdAt" = m.max_created')
+    .innerJoinAndSelect('bb.book', 'b')
+    .where('bb.status = :status')
+    .andWhere('bb.userId = :userId') // filter by userId
+    .andWhere('bb.dueDate < :currentDate')
+    .setParameters({
+      ...(sub.getParameters ? sub.getParameters() : {}),
+      status: BorrowStatus.BORROWED,
+      userId,
+      currentDate: new Date()
+    })
+    .getMany();
 
-    return result;
-  }
-  async getOverDuedBooks() {
-    const result = await this.repository.manager.query(
-      `
-  SELECT *   
-FROM (     
-  SELECT bb.*, b.*, u.*,
-         ROW_NUMBER() OVER (              
-           PARTITION BY bb."bookId"               
-           ORDER BY bb."createdAt" DESC            
-         ) as rn     
-  FROM book_borrower bb     
-  JOIN book b ON bb."bookId" = b.id
-  JOIN "user" u ON bb."userId" = u.id       
-) ranked   
-WHERE status = '${BorrowStatus.OVERDUE}' AND rn = 1`
-    );
+  return result;
+}
+async getOverDuedBooks(): Promise<BookBorrower[]> {
+  // subquery: for each bookId get the latest createdAt
+  const sub = this.repository.createQueryBuilder('sub_bb')
+    .select('sub_bb.bookId', 'bookId')
+    .addSelect('MAX(sub_bb.createdAt)', 'max_created')
+    .groupBy('sub_bb.bookId');
 
-    return result;
-  }
+  // main query: join the subquery on bookId + createdAt, load relations, filter by status and due date
+  const result = await this.repository.createQueryBuilder('bb')
+    .innerJoin(`(${sub.getQuery()})`, 'm', 'bb."bookId" = m."bookId" AND bb."createdAt" = m.max_created')
+    .innerJoinAndSelect('bb.book', 'b')
+    .innerJoinAndSelect('bb.user', 'u')
+    .where('bb.status = :status')
+    .andWhere('bb.dueDate < :currentDate')
+    .setParameters({ 
+      ...(sub.getParameters ? sub.getParameters() : {}), 
+      status: BorrowStatus.BORROWED,
+      currentDate: new Date()
+    })
+    .getMany();
 
-  async getBorrowedBooks() {
-    const result = await this.repository.manager.query(
-      `
-  SELECT *   
-FROM (     
-  SELECT bb.*, b.*, u.*,
-         ROW_NUMBER() OVER (              
-           PARTITION BY bb."bookId"               
-           ORDER BY bb."createdAt" DESC            
-         ) as rn     
-  FROM book_borrower bb     
-  JOIN book b ON bb."bookId" = b.id
-  JOIN "user" u ON bb."userId" = u.id       
-) ranked   
-WHERE status = '${BorrowStatus.BORROWED}' AND rn = 1`
-    );
+  return result;
+}
 
-    return result;
+  async getBorrowedBooks():Promise<BookBorrower[]> {
+      const sub = this.repository.createQueryBuilder('sub_bb')
+    .select('sub_bb.bookId', 'bookId')
+    .addSelect('MAX(sub_bb.createdAt)', 'max_created')
+    .groupBy('sub_bb.bookId');
+
+  // main query: join the subquery on bookId + createdAt, load relations, filter by status
+  const result = await this.repository.createQueryBuilder('bb')
+    .innerJoin(`(${sub.getQuery()})`, 'm', 'bb.bookId = m."bookId" AND bb."createdAt" = m.max_created')
+    .innerJoinAndSelect('bb.book', 'b')
+    .innerJoinAndSelect('bb.user', 'u')
+    .where('bb.status = :status')
+    .setParameters({ ...(sub.getParameters ? sub.getParameters() : {}), status: BorrowStatus.BORROWED })
+    .getMany();
+
+
+  return result;
   }
 }

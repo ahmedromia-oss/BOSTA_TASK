@@ -157,7 +157,10 @@ container.registerInterface<IBookController>(
     const bookService = container.resolve<IBookService>(
       SERVICE_TOKENS.IBookService
     );
-    return new BookController(bookService);
+    const authorService = container.resolve<IAuthorService>(
+      SERVICE_TOKENS.IAuthorservice
+    );
+    return new BookController(bookService , authorService);
   },
   true
 );

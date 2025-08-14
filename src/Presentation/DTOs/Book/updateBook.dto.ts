@@ -1,16 +1,11 @@
+import { Expose } from "class-transformer";
 import { IsString, IsOptional, IsISBN, IsNumber, Min } from "class-validator";
 
 export class UpdateBookDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @IsISBN()
-  @IsOptional()
-  ISBN?: string;
-
+  
   @IsNumber()
   @Min(0)
   @IsOptional()
+  @Expose()
   availableQuantity?: number;
 }
