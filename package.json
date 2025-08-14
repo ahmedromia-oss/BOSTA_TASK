@@ -1,0 +1,39 @@
+{
+  "name": "bosta_task",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "migration:run": "npm run build && npx typeorm migration:run -d dist/src/Infrastructure/DataBase/DataSource.js",
+    "migration:revert": "npx typeorm migration:revert -d dist/src/Infrastructure/DataBase/DataSource.js",
+    "create-migration": "npm run build && node src/Infrastructure/DataBase/Scripts/create-migration.cjs",
+    "build": "tsc",
+    "start": "node .",
+    "dev": "concurrently \"tsc --watch\" \"nodemon dist/server.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.25"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  }
+}
