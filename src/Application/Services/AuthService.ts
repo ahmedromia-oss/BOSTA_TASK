@@ -28,7 +28,7 @@ export class AuthService implements IAuthService {
       const [salt, Storedhash] = user.password.split(".");
       const hash = (await scrypt(login.password, salt!, 32)) as Buffer;
       if (Storedhash != hash.toString("hex")) {
-        throw new Error(Code.WRONG_CREDS);
+        throw new BadRequestException({message:"Wrong credintials"});
       }
       const payload: UserToken = {
         sub: user.id,
@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
       });
       return { token: token };
     }
-    throw new UnAuthorizedException(Code.WRONG_CREDS);
+    throw new UnAuthorizedException("Wrong credintials");
   }
   async register(signInDto: RegisterDto): Promise<User> {
     if (

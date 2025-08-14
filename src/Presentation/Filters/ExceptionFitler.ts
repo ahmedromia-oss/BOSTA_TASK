@@ -41,10 +41,10 @@ export function responseExceptionHandler(
     }
 
     if (err instanceof ForbiddenException) {
-      if (err.message !== Code.UN_VERIFIED) {
+      if (err.message !== Code.FORBIDDEN) {
         return res.status(403).json({ code: Code.FORBIDDEN });
       }
-      return res.status(403).json({ code: Code.UN_VERIFIED });
+      return res.status(403).json({ code: Code.FORBIDDEN });
     }
 
     if (err instanceof UnAuthorizedException) {
