@@ -6,10 +6,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Check,
 } from "typeorm";
 import { Author } from "./Author.model.js";
 
 @Entity()
+@Check(`"availableQuantity" >= 0`)
+
 export class Book {
   @PrimaryGeneratedColumn()
   id: number;

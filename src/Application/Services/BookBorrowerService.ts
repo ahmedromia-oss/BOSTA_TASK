@@ -10,6 +10,7 @@ import { BookBorrower } from "../../Domain/Models/BorrowerBook.model.js";
 import { GetBookDto } from "../../Presentation/DTOs/Book/getBook.dto.js";
 import { NotFoundException } from "../Errors/NotFoundException.js";
 import { BaseService } from "./BaseService.js";
+import { BadRequestException } from "../Errors/BadRequestException.js";
 
 export class BookBorrowerService
   extends BaseService<BookBorrower>
@@ -43,9 +44,12 @@ export class BookBorrowerService
       });
       if (Borrower?.status == BorrowStatus.RETURNED) {
         return await this.uow.execute(async (manager: EntityManager) => {
+          if(Borrower.book.availableQuantity < 1){
+            throw new BadRequestException({message:"out of stock"})
+          }
           await this.bookService.update(
             { id: BookId },
-            { availableQuantity: Borrower.book.availableQuantity - 1 },
+            { availableQuantity:Borrower.book.availableQuantity - 1},
             manager
           );
           await this.bookBorrowerRepository.create(
@@ -65,7 +69,12 @@ export class BookBorrowerService
     } catch (e) {
       if (e?.constructor?.name == "NotFoundException") {
         return await this.uow.execute(async (manager: EntityManager) => {
+
           const book = await this.bookService.findById(BookId);
+          if(book?.availableQuantity!<1){
+            throw new BadRequestException({message:"out of stock"})
+          }
+
           await this.bookBorrowerRepository.create(
             {
               bookId: BookId,
