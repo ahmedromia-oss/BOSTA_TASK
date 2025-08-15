@@ -13,11 +13,12 @@ import { JwtService } from "@nestjs/jwt";
 import type { IUserService } from "../../Domain/IServices/IUserService.js";
 import { UnAuthorizedException } from "../Errors/UnAuthorizedException.js";
 import { BadRequestException } from "../Errors/BadRequestException.js";
-
+import { config } from 'dotenv';
 /**
  * Service handling user authentication operations
  * Manages login, registration, and password hashing
  */
+config()
 export class AuthService implements IAuthService {
   constructor(
     private readonly userService: IUserService,
@@ -45,10 +46,10 @@ export class AuthService implements IAuthService {
         sub: user.id,
         userType: user.userType
       };
-      
+
       // Generate access token
       const token = await this.jwtService.signAsync(payload, {
-        secret: "mySecretKey",
+        secret:process.env.SECRET_KEY||"mySecretKey",
         expiresIn: "1h",
       });
       
@@ -68,13 +69,13 @@ export class AuthService implements IAuthService {
       throw new BadRequestException({message:Code.EMAIL_USED});
     }
 
-    // Hash the password before storing
+    console.log(signInDto)
     const hashedPass = await this.hashSaltPassword(signInDto.password);
     signInDto.password = hashedPass;
     
     // Convert DTO to User entity and save
-    const user = plainToInstance(User, signInDto , {excludeExtraneousValues:true});
-    return await this.userService.create(user);
+    
+    return await this.userService.create(signInDto);
   }
 
   verifyToken(token: string): Promise<boolean> {

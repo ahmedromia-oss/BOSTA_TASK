@@ -3,11 +3,12 @@ import { NextFunction, Request, Response } from "express";
 import { UnAuthorizedException } from "../Errors/UnAuthorizedException.js";
 import { Code } from "../../Domain/constants.js";
 import { UserToken } from "../../Domain/Models/userToken.model.js";
-
+import { config } from 'dotenv';
 /**
  * Guard class for JWT token authentication
  * Verifies Bearer tokens and attaches user data to request
  */
+config()
 export class AuthGuard {
   constructor(private jwtService: JwtService) {}
 
@@ -26,7 +27,8 @@ export class AuthGuard {
 
     try {
       // Verify the token and decode user information
-      const decoded = this.jwtService.verify(token, { secret: "mySecretKey" }) as UserToken;
+      console.log("this is the secretKey" , process.env.SECRET_KEY)
+      const decoded = this.jwtService.verify(token, { secret: process.env.SECRET_KEY||"mySecretKey"}) as UserToken;
       req.user = decoded;
       next(); // Continue to next middleware/handler
     } catch (error) {

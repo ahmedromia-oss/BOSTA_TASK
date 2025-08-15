@@ -65,8 +65,3 @@ resolve<T>(token: symbol): T {
 }
 
 // Service tokens
-export const SERVICE_TOKENS = {
-  IUserService: Symbol('IUserService'),
-  IUserController: Symbol('IUserController'),
-} as const;
-
