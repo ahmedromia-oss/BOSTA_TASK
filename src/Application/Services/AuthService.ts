@@ -73,7 +73,7 @@ export class AuthService implements IAuthService {
     signInDto.password = hashedPass;
     
     // Convert DTO to User entity and save
-    const user = plainToInstance(User, signInDto);
+    const user = plainToInstance(User, signInDto , {excludeExtraneousValues:true});
     return await this.userService.create(user);
   }
 

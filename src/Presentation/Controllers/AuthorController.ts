@@ -27,7 +27,7 @@ export class AuthorController implements IAuthorController {
     @serialize(getAuthorDto)
     async create({ body }: Request, res: Response): Promise<Author> {
         // Transform request data to DTO
-        const authorData: CreateAuthorDto = plainToInstance(CreateAuthorDto, body)
+        const authorData: CreateAuthorDto = plainToInstance(CreateAuthorDto, body , {excludeExtraneousValues:true})
         
         // Check if author with this name already exists
         if (await this.authorService.checkIFExists({ where: { name: authorData.name } })) {
@@ -72,7 +72,7 @@ export class AuthorController implements IAuthorController {
         const { id } = req.params
         
         // Transform and validate update data
-        const authorData: UpdateAuthorDto = plainToInstance(UpdateAuthorDto, body)
+        const authorData: UpdateAuthorDto = plainToInstance(UpdateAuthorDto, body , {excludeExtraneousValues:true})
         const errors = await validate(authorData)
         if (errors.length > 0) {
             throw new BadRequestException(errors)

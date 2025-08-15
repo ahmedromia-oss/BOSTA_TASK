@@ -48,7 +48,7 @@ export class UserController implements IUserController {
   @serialize()
   async updateUser({ body, user }: Request, res: Response): Promise<string> {
     // Transform and validate the update data
-    const updateDto = plainToInstance(updateUserDto, body);
+    const updateDto = plainToInstance(updateUserDto, body , {excludeExtraneousValues:true});
     const errors = await validate(updateDto);
     if (errors.length > 0) {
       throw new BadRequestException(errors);
@@ -77,7 +77,7 @@ export class UserController implements IUserController {
     res: Response
   ): Promise<User> {
     // Transform request body to DTO
-    const user = plainToInstance(createUserDto, body);
+    const user = plainToInstance(createUserDto, body , {excludeExtraneousValues:true});
 
     // Validate the user data against DTO constraints
     const errors = await validate(user);

@@ -28,7 +28,7 @@ export class AuthController implements IAuthController {
     res: Response
   ): Promise<AuthResponseDto> {
     // Transform request body to LoginDto instance
-    const loginDto = plainToInstance(LoginDto, body);
+    const loginDto = plainToInstance(LoginDto, body , {excludeExtraneousValues:true});
     
     // Validate the login data against DTO constraints
     const errors = await validate(loginDto);
@@ -50,7 +50,7 @@ export class AuthController implements IAuthController {
     res: Response
   ): Promise<User> {
     // Transform request body to RegisterDto instance
-    const registerDto = plainToInstance(RegisterDto, body);
+    const registerDto = plainToInstance(RegisterDto, body , {excludeExtraneousValues:true});
     
     // Validate registration data
     const errors = await validate(registerDto);
