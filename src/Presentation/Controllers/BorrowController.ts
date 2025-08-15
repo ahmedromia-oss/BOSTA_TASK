@@ -23,7 +23,7 @@ export class BorrowController implements IBorrowController {
     @serialize(getBorrowedBooksDto)
     async AllgetOverdueBooks(req: Request, res: Response): Promise<BookBorrower[]> {
         const { skip, take } = req.query
-        return await this.borrowService.AllgetOverdueBooks(Number(skip), Number(take))
+        return await this.borrowService.AllgetOverdueBooks(Number(skip??0), Number(take??5))
     }
 
     /**
@@ -33,7 +33,8 @@ export class BorrowController implements IBorrowController {
     @serialize(getBorrowedBooksDto)
     async AllgetBorrowedBooks(req: Request, res: Response): Promise<BookBorrower[]> {
         const { skip, take } = req.query
-        return await this.borrowService.AllgetBorrowedBooks(Number(skip), Number(take))
+         console.log(skip , take)
+        return await this.borrowService.AllgetBorrowedBooks(Number(skip??0), Number(take??5))
     }
 
     /**
@@ -68,9 +69,11 @@ export class BorrowController implements IBorrowController {
      */
     @Auth()
     @serialize(getBorrowedBooksDto)
-    async getBorrowedBooks({ user, ...req }: Request, res: Response): Promise<BookBorrower[]> {
+    async getBorrowedBooks(req: Request, res: Response): Promise<BookBorrower[]> {
         const { skip, take } = req.query
-        return await this.borrowService.getBorrowedBooks(user?.sub ?? 0, Number(skip), Number(take))
+        const user = req.user
+       
+        return await this.borrowService.getBorrowedBooks(user?.sub ?? 0, Number(skip??0), Number(take??5))
     }
 
     /**
@@ -79,8 +82,9 @@ export class BorrowController implements IBorrowController {
      */
     @Auth()
     @serialize(getBorrowedBooksDto)
-    async getOverdueBooks({ user, ...req }: Request, res: Response): Promise<BookBorrower[]> {
+    async getOverdueBooks(req: Request, res: Response): Promise<BookBorrower[]> {
         const { skip, take } = req.query
-        return await this.borrowService.getOverdueBooks(user?.sub ?? 0, Number(skip), Number(take))
+        const user = req.user
+        return await this.borrowService.getOverdueBooks(user?.sub ?? 0, Number(skip??0), Number(take??5))
     }
 }

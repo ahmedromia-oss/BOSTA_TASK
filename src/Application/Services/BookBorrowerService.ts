@@ -31,15 +31,15 @@ export class BookBorrowerService
   /**
    * Get all borrowed books across all users
    */
-  async AllgetBorrowedBooks(): Promise<BookBorrower[]> {
-    return await this.bookBorrowerRepository.getBorrowedBooks();
+  async AllgetBorrowedBooks(skip?:number , take?:number): Promise<BookBorrower[]> {
+    return await this.bookBorrowerRepository.getBorrowedBooks(skip , take);
   }
 
   /**
    * Get all overdue books across all users
    */
-  async AllgetOverdueBooks(): Promise<BookBorrower[]> {
-    return await this.bookBorrowerRepository.getOverDuedBooks();
+  async AllgetOverdueBooks(skip?:number , take?:number): Promise<BookBorrower[]> {
+    return await this.bookBorrowerRepository.getOverDuedBooks(skip , take);
   }
 
   /**

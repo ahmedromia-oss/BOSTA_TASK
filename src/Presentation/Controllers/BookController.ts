@@ -32,7 +32,7 @@ export class BookController implements IBookController {
   @serialize(GetBookDto)
   async searchBooks(req: Request, res: Response): Promise<Book[]> {
     const searchTerm = req.query.search as string;
-    return await this.bookService.searchBooks(searchTerm);
+    return await this.bookService.searchBooks(searchTerm??'');
   }
 
   /**

@@ -18,6 +18,7 @@ export class BookBorrowerRepository
     skip?: number,
     take?: number
   ): Promise<BookBorrower[]> {
+    
     const sub = this.repository
       .createQueryBuilder("sub_bb")
       .select("sub_bb.bookId", "bookId")
@@ -116,6 +117,7 @@ export class BookBorrowerRepository
     skip?: number,
     take?: number
   ): Promise<BookBorrower[]> {
+    
     const sub = this.repository
       .createQueryBuilder("sub_bb")
       .select("sub_bb.bookId", "bookId")

@@ -64,7 +64,8 @@ export class UserController implements IUserController {
    */
   @serialize(GetUserDto)
   async getUsers(req: Request, res: Response): Promise<User[]> {
-    return await this.userService.findAll();
+    const {skip , take} = req.query
+    return await this.userService.findAll({skip:Number(skip??0) , take:Number(take??5)});
   }
 
   /**

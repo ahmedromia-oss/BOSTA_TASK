@@ -59,7 +59,8 @@ export class AuthorController implements IAuthorController {
      */
     @serialize(getAuthorDto)
     async getAll(req: Request, res: Response): Promise<Author[]> {
-        return await this.authorService.findAll()
+        const {skip , take} = req.query
+        return await this.authorService.findAll({skip:Number(skip??0) , take:Number(take??5)})
     }
 
     /**
