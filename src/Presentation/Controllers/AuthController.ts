@@ -51,7 +51,6 @@ export class AuthController implements IAuthController {
   ): Promise<User> {
     // Transform request body to RegisterDto instance
     const registerDto = plainToInstance(RegisterDto, body , {excludeExtraneousValues:true});
-    console.log(registerDto)
     
     // Validate registration data
     const errors = await validate(registerDto);

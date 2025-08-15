@@ -69,7 +69,6 @@ export class AuthService implements IAuthService {
       throw new BadRequestException({message:Code.EMAIL_USED});
     }
 
-    console.log(signInDto)
     const hashedPass = await this.hashSaltPassword(signInDto.password);
     signInDto.password = hashedPass;
     

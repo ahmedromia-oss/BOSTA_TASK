@@ -27,7 +27,6 @@ export class AuthGuard {
 
     try {
       // Verify the token and decode user information
-      console.log("this is the secretKey" , process.env.SECRET_KEY)
       const decoded = this.jwtService.verify(token, { secret: process.env.SECRET_KEY||"mySecretKey"}) as UserToken;
       req.user = decoded;
       next(); // Continue to next middleware/handler

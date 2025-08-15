@@ -33,7 +33,6 @@ export class BorrowController implements IBorrowController {
     @serialize(getBorrowedBooksDto)
     async AllgetBorrowedBooks(req: Request, res: Response): Promise<BookBorrower[]> {
         const { skip, take } = req.query
-         console.log(skip , take)
         return await this.borrowService.AllgetBorrowedBooks(Number(skip??0), Number(take??5))
     }
 

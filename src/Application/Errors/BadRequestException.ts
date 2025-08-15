@@ -8,7 +8,6 @@ export class BadRequestException extends Error {
 
   constructor(errors: string[] | Record<string, any>, message = "Bad Request") {
     super(message);
-    console.log(message)
     this.name = "BadRequestException";
     this.statusCode = 400;
     this.errors = errors;
