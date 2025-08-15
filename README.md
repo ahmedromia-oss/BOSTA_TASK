@@ -13,7 +13,7 @@ npm install
 
 ### 2. Run Database Migrations
 ```bash
-npm run migrations
+npm run migration:run  
 ```
 
 ### 3. Build the Project

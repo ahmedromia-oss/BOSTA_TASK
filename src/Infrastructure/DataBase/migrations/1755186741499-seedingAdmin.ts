@@ -2,7 +2,8 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
 import { UserType } from "../../../Domain/constants.js";
-
+import { config } from 'dotenv';
+config()
 export class SeedingAdmin1755185756193 implements MigrationInterface {
     name = "1755186741499"
     
@@ -15,14 +16,14 @@ export class SeedingAdmin1755185756193 implements MigrationInterface {
     }
     
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const hashedPassword = await this.hashSaltPassword("admin123");
+        const hashedPassword = await this.hashSaltPassword(process.env.adminPass||"admin123");
 
         await queryRunner.query(
             `
             INSERT INTO "user" (username, email, password, "userType")
             VALUES ($1, $2, $3, $4);
             `,
-            ["SuperAdmin", "admin@gmail.com", hashedPassword, UserType.ADMIN]
+            ["SuperAdmin",process.env.adminEmail||"admin@gmail.com", hashedPassword, UserType.ADMIN]
         );
     }
 
